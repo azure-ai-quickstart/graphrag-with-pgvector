@@ -39,11 +39,15 @@ notebook_dir = os.path.abspath("")
 parent_dir = os.path.dirname(notebook_dir)
 grandparent_dir = os.path.dirname(parent_dir)
 sys.path.append(grandparent_dir)
+api_version="2024-02-01"
 
 llm = ChatOpenAI(
     api_key=os.environ["OPENAI_API_KEY"],
-    model=os.getenv('OPENAI_CHAT_MODEL_ID', 'gpt-4o-mini'),
-    api_type=OpenaiApiType.OpenAI,
+    model=os.getenv('GRAPHRAG_CHAT_MODEL_ID', 'gpt-4o-mini'),
+    api_type=OpenaiApiType.AzureOpenAI,
+    api_base=os.getenv('OPENAI_API_BASE'),
+    api_version=api_version,
+    deployment_name=os.environ["LLM_DEPLOYMENT_NAME"],
     max_retries=20,
 )
 
@@ -251,14 +255,14 @@ def get_context_builder(index_report):
 
     text_unit_df.head()
 
-    embedding_model = os.environ["GRAPHRAG_EMBEDDING_MODEL"]
 
     text_embedder = OpenAIEmbedding(
         api_key=os.environ["OPENAI_API_KEY"],
-        api_base=None,
-        api_type=OpenaiApiType.OpenAI,
-        model=embedding_model,
-        deployment_name=embedding_model,
+        api_base=os.getenv('OPENAI_API_BASE'),
+        api_type=OpenaiApiType.AzureOpenAI,
+        api_version=api_version,
+        model=os.environ["GRAPHRAG_EMBEDDING_MODEL"],
+        deployment_name=os.environ["EMBEDDINGS_DEPLOYMENT_NAME"],
         max_retries=20,
     )
 
