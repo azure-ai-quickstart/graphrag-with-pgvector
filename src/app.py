@@ -40,6 +40,7 @@ parent_dir = os.path.dirname(notebook_dir)
 grandparent_dir = os.path.dirname(parent_dir)
 sys.path.append(grandparent_dir)
 api_version="2024-02-01"
+
 llm = ChatOpenAI(
     api_key=os.environ["OPENAI_API_KEY"],
     model=os.getenv('GRAPHRAG_CHAT_MODEL_ID', 'gpt-4o-mini'),
