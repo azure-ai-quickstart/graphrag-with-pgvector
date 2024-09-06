@@ -3,15 +3,12 @@ encoding_model: cl100k_base
 skip_workflows: []
 llm:
   api_key: ${OPENAI_API_KEY}
-  type: openai_chat # or azure_openai_chat
-  model: gpt-4o-mini
-  model_supports_json: true # recommended if this is available for your model.
-  # max_tokens: 4000
-  # request_timeout: 180.0
-  # api_base: https://<instance>.openai.azure.com
-  # api_version: 2024-02-15-preview
-  # organization: <organization_id>
-  # deployment_name: <azure_model_deployment_name>
+  type: azure_openai_chat
+  model: ${GRAPHRAG_CHAT_MODEL_ID}
+  model_supports_json: true
+  api_base: ${OPENAI_API_BASE}
+  api_version: 2024-02-15-preview
+  deployment_name: ${LLM_DEPLOYMENT_NAME}
   # tokens_per_minute: 150_000 # set a leaky bucket throttle
   # requests_per_minute: 10_000 # set a leaky bucket throttle
   # max_retries: 10
@@ -33,12 +30,12 @@ embeddings:
   async_mode: threaded # or asyncio
   llm:
     api_key: ${OPENAI_API_KEY}
-    type: openai_embedding # or azure_openai_embedding
-    model: text-embedding-3-small
-    # api_base: https://<instance>.openai.azure.com
-    # api_version: 2024-02-15-preview
+    type: azure_openai_embedding
+    model: ${GRAPHRAG_EMBEDDING_MODEL}
+    api_base: ${OPENAI_API_BASE}
+    api_version: 2024-02-15-preview
+    deployment_name: ${EMBEDDINGS_DEPLOYMENT_NAME}
     # organization: <organization_id>
-    # deployment_name: <azure_model_deployment_name>
     # tokens_per_minute: 150_000 # set a leaky bucket throttle
     # requests_per_minute: 10_000 # set a leaky bucket throttle
     # max_retries: 10
@@ -54,7 +51,7 @@ chunks:
   size: 1200
   overlap: 100
   group_by_columns: [id] # by default, we don't allow chunks to cross documents
-    
+
 input:
   type: file # or blob
   file_type: text # or csv
@@ -132,22 +129,22 @@ snapshots:
   top_level_nodes: false
 
 local_search:
-  # text_unit_prop: 0.5
-  # community_prop: 0.1
-  # conversation_history_max_turns: 5
-  # top_k_mapped_entities: 10
-  # top_k_relationships: 10
-  # llm_temperature: 0 # temperature for sampling
-  # llm_top_p: 1 # top-p sampling
-  # llm_n: 1 # Number of completions to generate
-  # max_tokens: 12000
+# text_unit_prop: 0.5
+# community_prop: 0.1
+# conversation_history_max_turns: 5
+# top_k_mapped_entities: 10
+# top_k_relationships: 10
+# llm_temperature: 0 # temperature for sampling
+# llm_top_p: 1 # top-p sampling
+# llm_n: 1 # Number of completions to generate
+# max_tokens: 12000
 
 global_search:
-  # llm_temperature: 0 # temperature for sampling
-  # llm_top_p: 1 # top-p sampling
-  # llm_n: 1 # Number of completions to generate
-  # max_tokens: 12000
-  # data_max_tokens: 12000
-  # map_max_tokens: 1000
-  # reduce_max_tokens: 2000
-  # concurrency: 32
+# llm_temperature: 0 # temperature for sampling
+# llm_top_p: 1 # top-p sampling
+# llm_n: 1 # Number of completions to generate
+# max_tokens: 12000
+# data_max_tokens: 12000
+# map_max_tokens: 1000
+# reduce_max_tokens: 2000
+# concurrency: 32

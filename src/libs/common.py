@@ -11,6 +11,7 @@ def create_session_files():
 
 
 def run_command(command):
+    # st.write(command)
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     while True:
