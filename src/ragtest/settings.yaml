@@ -7,45 +7,23 @@ llm:
   model: ${GRAPHRAG_CHAT_MODEL_ID}
   model_supports_json: true
   api_base: ${OPENAI_API_BASE}
-  api_version: 2024-02-15-preview
+  api_version: "2023-03-15-preview"
   deployment_name: ${LLM_DEPLOYMENT_NAME}
-  # tokens_per_minute: 150_000 # set a leaky bucket throttle
-  # requests_per_minute: 10_000 # set a leaky bucket throttle
-  # max_retries: 10
-  # max_retry_wait: 10.0
-  # sleep_on_rate_limit_recommendation: true # whether to sleep when azure suggests wait-times
-  # concurrent_requests: 25 # the number of parallel inflight requests that may be made
-  # temperature: 0 # temperature for sampling
-  # top_p: 1 # top-p sampling
-  # n: 1 # Number of completions to generate
 
 parallelization:
   stagger: 0.3
-  # num_threads: 50 # the number of threads to use for parallel processing
 
 async_mode: threaded # or asyncio
 
 embeddings:
-  ## parallelization: override the global parallelization settings for embeddings
   async_mode: threaded # or asyncio
   llm:
     api_key: ${OPENAI_API_KEY}
     type: azure_openai_embedding
     model: ${GRAPHRAG_EMBEDDING_MODEL}
     api_base: ${OPENAI_API_BASE}
-    api_version: 2024-02-15-preview
+    api_version: "2023-05-15"
     deployment_name: ${EMBEDDINGS_DEPLOYMENT_NAME}
-    # organization: <organization_id>
-    # tokens_per_minute: 150_000 # set a leaky bucket throttle
-    # requests_per_minute: 10_000 # set a leaky bucket throttle
-    # max_retries: 10
-    # max_retry_wait: 10.0
-    # sleep_on_rate_limit_recommendation: true # whether to sleep when azure suggests wait-times
-    # concurrent_requests: 25 # the number of parallel inflight requests that may be made
-    # batch_size: 16 # the number of documents to send in a single request
-    # batch_max_tokens: 8191 # the maximum number of tokens to send in a single request
-    # target: required # or optional
-
 
 chunks:
   size: 1200
