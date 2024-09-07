@@ -213,11 +213,11 @@ def get_pg_store():
     )
 
     description_embedding_store.connect(
-        host=os.getenv('POSTGRES_HOST'),
-        password=os.getenv('POSTGRES_PASSWORD'),
-        dbname=os.getenv('POSTGRES_DB'),
-        user=os.getenv('POSTGRES_USER'),
-        port=os.getenv('POSTGRES_PORT', '5432'),
+        host=os.getenv('PGHOST'),
+        password=os.getenv('PGPASSWORD'),
+        dbname=os.getenv('PGDATABASE'),
+        user=os.getenv('PGUSER'),
+        port=os.getenv('PGPORT', '5432'),
     )
 
     return description_embedding_store

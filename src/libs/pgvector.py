@@ -66,9 +66,11 @@ class PgVectorStore(BaseVectorStore):
 
         if overwrite:
             if raws:
+                self.create_vector()
                 self.create_pg_table()
                 self.insert_data(raws)
             else:
+                self.create_vector()
                 self.create_pg_table()
         else:
             if raws:
@@ -76,7 +78,6 @@ class PgVectorStore(BaseVectorStore):
 
     def create_vector(self):
         try:
-            st.write("CREATE EXTENSION vector")
             sql = f"CREATE EXTENSION vector;"
             self.cur.execute(sql)
             self.conn.commit()
