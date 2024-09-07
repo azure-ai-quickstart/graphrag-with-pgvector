@@ -9,7 +9,7 @@ import zipfile
 import os
 from dotenv import load_dotenv
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-
+from willtools.id import get_st_session_id
 from libs.markdown import deal_md
 from libs.pg_local_search import PgLocalSearch
 from graphrag.query.llm.oai.typing import OpenaiApiType
@@ -82,7 +82,7 @@ llm_params = {
 
 
 def deal_zip(uploaded_file: UploadedFile):
-    extract_dir = f'/tmp/workshop/input/'
+    extract_dir = f'/tmp/{st.session_state.id}/input/'
     if uploaded_file is not None:
 
         # Ensure the extraction directory exists
@@ -144,17 +144,17 @@ def upload_file():
             stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
             string_data = stringio.read()
 
-            with open(f"/tmp/workshop/input/input.txt", "w") as f:
+            with open(f"/tmp/{st.session_state.id}/input/input.txt", "w") as f:
                 f.write(string_data)
                 st.success('File uploaded successfully.')
 
                 if uploaded_file.name.endswith('.md'):
-                    extract_dir = f'/tmp/workshop/input/'
+                    extract_dir = f'/tmp/{st.session_state.id}/input/'
                     deal_md(extract_dir, 'input.txt')
 
 
 def build_index():
-    base_path = f"/tmp/workshop"
+    base_path = f"/tmp/{st.session_state.id}"
     st.markdown("### Step 3: Build your Index")
     if st.button('Build Index'):
         with st.chat_message("user", avatar="avatars/ms.svg"):
@@ -193,7 +193,7 @@ def build_index():
             with st.expander(f"LLM Logs {len(lines)} items: Expand/Collapse"):
                 st.write(lines)
 
-            subdirectories = list_subdirectories(path=f"/tmp/workshop/output")
+            subdirectories = list_subdirectories(path=f"/tmp/{st.session_state.id}/output")
             if len(subdirectories) == 0:
                 st.error("Your need to build index first.")
                 return
@@ -209,7 +209,7 @@ def build_index():
 
 def get_pg_store():
     description_embedding_store = PgVectorStore(
-        collection_name=f"entity_embeddings_workshop",
+        collection_name=f"entity_embeddings_{st.session_state.id}",
     )
 
     description_embedding_store.connect(
@@ -224,14 +224,14 @@ def get_pg_store():
 
 
 def get_entities(index_report):
-    input_dir = f"/tmp/workshop/output/{index_report}/artifacts"
+    input_dir = f"/tmp/{st.session_state.id}/output/{index_report}/artifacts"
     entity_df = pd.read_parquet(f"{input_dir}/create_final_nodes.parquet")
     entity_embedding_df = pd.read_parquet(f"{input_dir}/create_final_entities.parquet")
     return read_indexer_entities(final_nodes=entity_df, final_entities=entity_embedding_df, community_level=2)
 
 
 def get_context_builder(index_report):
-    input_dir = f"/tmp/workshop/output/{index_report}/artifacts"
+    input_dir = f"/tmp/{st.session_state.id}/output/{index_report}/artifacts"
     entity_df = pd.read_parquet(f"{input_dir}/create_final_nodes.parquet")
     entities = get_entities(index_report)
 
@@ -291,11 +291,11 @@ async def search():
                 st.error("Please enter a query")
                 return
 
-            if not os.path.exists(f"/tmp/workshop/output"):
+            if not os.path.exists(f"/tmp/{st.session_state.id}/output"):
                 st.error("Please build index first")
                 return
 
-            subdirectories = list_subdirectories(path=f"/tmp/workshop/output")
+            subdirectories = list_subdirectories(path=f"/tmp/{st.session_state.id}/output")
             if len(subdirectories) == 0:
                 st.error("Your need to build index first.")
                 return
@@ -325,6 +325,7 @@ if __name__ == "__main__":
                            initial_sidebar_state='expanded')
         st.image("avatars/logo.svg", width=150)
         st.title(title)
+        get_st_session_id()
         dataset()
         st.markdown("----------------------------")
         upload_file()
