@@ -83,7 +83,6 @@ class PgVectorStore(BaseVectorStore):
             self.conn.commit()
         except Exception as e:
             self.conn.rollback()
-            st.write(e)
 
     def truncate_table(self):
         try:
