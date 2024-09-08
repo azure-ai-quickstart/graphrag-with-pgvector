@@ -284,7 +284,7 @@ async def search():
                          label_visibility='hidden',
                          max_chars=1000,
                          placeholder="Enter your query here ...",
-                         value="")
+                         value="故事的主角是谁？")
     if st.button('Search'):
         with st.chat_message("system", avatar="avatars/postgres.svg"):
             if not query:
