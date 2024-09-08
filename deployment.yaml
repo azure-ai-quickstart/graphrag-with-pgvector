@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphrag-pgvector-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphrag-pgvector
+  template:
+    metadata:
+      labels:
+        app: graphrag-pgvector
+    spec:
+      containers:
+        - name: graphrag-pgvector
+          image: ${ACR_NAME}.azurecr.io/aidemo:v1
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphrag-pgvector-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector:
+    app: graphrag-pgvector
