@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: graphrag-pgvector
-          image: ${ACR_NAME}.azurecr.io/aidemo:v1
+          image: ${ACR_NAME}.azurecr.io/aidemo:${CLUSTER_NAME}
           ports:
             - containerPort: 80
 ---
