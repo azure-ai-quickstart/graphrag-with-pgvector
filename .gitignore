@@ -3,4 +3,3 @@
 .env
 __pycache__
 .venv
-deployment.yaml
