@@ -4,8 +4,9 @@ import re
 import requests
 import streamlit as st
 from pathlib import Path
-from openai import OpenAI
-
+import asyncio
+from graphrag.query.llm.oai.chat_openai import ChatOpenAI
+from graphrag.query.llm.oai.typing import OpenaiApiType
 
 def replace_image_tag(match):
     image_path = match.group(1)
@@ -45,35 +46,51 @@ def deal_md(extract_dir, file_name):
                 st.text(updated_md_content)
 
 
-def get_image_description(client, encoded_string, image_extension, prompt, model_choice):
-    response = client.chat.completions.create(
-        model=model_choice,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompt},
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/{image_extension};base64,{encoded_string}"}
-                    },
-                ],
-            }
-        ],
-        max_tokens=300,
+def get_image_description(encoded_string, image_extension, prompt):
+    client = ChatOpenAI(
+        api_key=os.environ["OPENAI_API_KEY"],
+        model=os.getenv('GRAPHRAG_CHAT_MODEL_ID', 'gpt-4o-mini'),
+        api_type=OpenaiApiType.AzureOpenAI,
+        api_base=os.getenv('OPENAI_API_BASE'),
+        api_version="2024-02-01",
+        deployment_name=os.environ["LLM_DEPLOYMENT_NAME"],
+        max_retries=20,
     )
 
-    return response.choices[0].message.content
+    search_messages = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": prompt},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/{image_extension};base64,{encoded_string}"}
+                },
+            ],
+        }
+    ]
+
+    llm_params = {
+        "max_tokens": 6_000,
+        "temperature": 1.0,
+    }
+
+    response = asyncio.run(client.agenerate(
+        messages=search_messages,
+        streaming=False,
+        **llm_params,
+    ))
+
+    return response
 
 
 def rek_image(image_path: str):
-    client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     image_classifying_path = f"{image_path}.desc"
 
     # if image_classifying_path exists, then open it content as string
-    if os.path.exists(image_classifying_path):
-        with open(image_classifying_path, 'r') as image_file:
-            return image_file.read()
+    # if os.path.exists(image_classifying_path):
+    #     with open(image_classifying_path, 'r') as image_file:
+    #         return image_file.read()
 
     if not os.path.exists(image_path):
         st.write(f"Image not found: {image_path}")
@@ -88,11 +105,9 @@ def rek_image(image_path: str):
             if encoded_string:
                 try:
                     description = get_image_description(
-                        client,
                         encoded_string,
                         image_extension,
-                        'What’s in this image? please use chinese.',
-                        "gpt-4o")
+                        'What’s in this image? please use chinese.')
 
                     with open(image_classifying_path, 'w') as t_file:
                         t_file.write(description)
